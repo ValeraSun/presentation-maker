@@ -1,39 +1,59 @@
-import type { Presentation } from "../types/presentation";
-import { generateId } from "./id";
-import { isSlide } from "./slide";
+import type { Presentation } from "../types/presentation.js";
+import { generateId } from "./id.js";
+import { isSlide } from "./slide.js";
 
 function createPresentation(name: string): Presentation {
-    return  {
-        id: generateId(),
-        name: name,
-        slides: [],
-    }
+	return {
+		id: generateId(),
+		activeSlideId: null,
+		name: name,
+		slides: [],
+	};
 }
 
-function updatePresentationName(presentation: Presentation, name: string): Presentation {
-    const newPresentaion = structuredClone(presentation) 
-    newPresentaion.name = name
-    return newPresentaion       
+function updatePresentationName(
+	presentation: Presentation,
+	name: string,
+): Presentation {
+	return {
+		...presentation,
+		name,
+	};
 }
 
-function savePresentation(presentation: Presentation): string{
-    return JSON.stringify(presentation)
+function savePresentation(presentation: Presentation): string {
+	return JSON.stringify(presentation);
 }
 
-function isPresentation(object: any): boolean {
-    return typeof object == "object" &&
-    typeof object.id === "string" &&
-    typeof object.name === "string" &&
-    Array.isArray(object.slides)&&
-    object.slides.every(isSlide)
+function isPresentation(object: unknown): object is Presentation {
+	const candidate = object as
+		| Partial<Record<keyof Presentation, unknown>>
+		| null
+		| undefined;
+
+	return (
+		typeof candidate === "object" &&
+		candidate !== null &&
+		typeof candidate?.id === "string" &&
+		typeof candidate?.name === "string" &&
+		Array.isArray(candidate?.slides) &&
+		candidate.slides.every(isSlide)
+	);
 }
 
-function loadPresentation(json: string): Presentation | null{
-    const loaded = JSON.parse(json)
-    if (isPresentation(loaded)){
-        return loaded
-    } else {
-        return null
-    }
-    
+function loadPresentation(json: string): Presentation | null {
+	const loaded = JSON.parse(json);
+	if (isPresentation(loaded)) {
+		return loaded;
+	} else {
+		return null;
+	}
 }
+
+export {
+	createPresentation,
+	isPresentation,
+	loadPresentation,
+	savePresentation,
+	updatePresentationName,
+};

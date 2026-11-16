@@ -1,13 +1,24 @@
-type SlideObject = TextObject | ImageObject
+type SlideObject = TextObject | ImageObject;
 
-type TextObject = {
-    type: "text",
-    text: string,
-}
+type BaseSlideObject = {
+	id: string;
+	x: number;
+	y: number;
+	width: number;
+	height: number;
+};
 
-type ImageObject = {
-    type: "image",
-    src: string,
-}
+type TextObject = BaseSlideObject & {
+	type: "text";
+	content: string;
+	fontFamily: string;
+	fontSize: number;
+	fontColor: string;
+};
 
-export { SlideObject }
+type ImageObject = BaseSlideObject & {
+	type: "image";
+	src: string;
+};
+
+export type { SlideObject };
